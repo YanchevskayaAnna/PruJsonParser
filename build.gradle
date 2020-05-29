@@ -1,0 +1,66 @@
+group 'pru-file-parser'
+version version
+
+apply plugin: 'java'
+sourceCompatibility = 1.8
+
+compileJava {
+    sourceCompatibility = '1.8'
+    targetCompatibility = '1.8'
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/main/java']
+        }
+    }
+}
+
+ext {
+    awsSdkVersion = '1.11.669'
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    compile("com.amazonaws:aws-java-sdk-s3:$awsSdkVersion",
+            "com.amazonaws:aws-java-sdk-dynamodb:$awsSdkVersion",
+            "com.amazonaws:aws-java-sdk-lambda:$awsSdkVersion",
+            "com.amazonaws:aws-java-sdk-sqs:$awsSdkVersion",
+            'com.amazonaws:aws-lambda-java-core:1.2.0',
+            'com.amazonaws:aws-lambda-java-events:2.2.5',
+            'ch.qos.logback:logback-classic:1.2.3',
+            'ch.qos.logback:logback-core:1.2.3',
+            'com.fasterxml.jackson.core:jackson-databind:2.10.0'
+    )
+
+    configurations.compile {
+        exclude group: "log4j", module: "log4j"
+    }
+
+    compileOnly 'org.projectlombok:lombok:1.18.8'
+    compileOnly 'com.amazonaws:aws-lambda-java-core:1.2.0'
+
+    annotationProcessor('org.projectlombok:lombok:1.18.8')
+
+}
+
+
+task fatJar(type: Jar) {
+    archiveName = 'pru-file-parse.jar'
+    manifest.from jar.manifest
+    classifier = 'all'
+    zip64 = true
+    from {
+        configurations.runtime.collect { it.isDirectory() ? it : zipTree(it) }
+    } {
+        exclude "META-INF/*.SF"
+        exclude "META-INF/*.DSA"
+        exclude "META-INF/*.RSA"
+    }
+    with jar
+}

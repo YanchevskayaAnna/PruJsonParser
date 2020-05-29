@@ -1,0 +1,24 @@
+.idea/
+.project/
+.gradle/
+.~lock.*
+.buildpath
+out/
+build/
+venv/
+*.iml
+.DS_Store
+*.log
+# Package Files #
+*.jar
+!gradle-wrapper.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+*.pyc
+*.out
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
