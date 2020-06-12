@@ -49,7 +49,6 @@ public class Row implements RangedDynamoDBEntity<String, String> {
         this.batchId = hashKey;
     }
 
-
     @Override
     public String getRangeKey() {
         return id;

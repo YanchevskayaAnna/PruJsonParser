@@ -6,16 +6,14 @@ import com.amazonaws.services.lambda.runtime.events.SQSEvent;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.event.S3EventNotification;
 import com.pru.lambda.domain.FilePath;
-import com.pru.lambda.service.DefaultDatabaseService;
-import com.pru.lambda.service.DefaultFileParserService;
-import com.pru.lambda.service.FileParserService;
-import com.pru.lambda.service.JsonFileParser;
+import com.pru.lambda.service.*;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class FileParserLambdaHandler implements RequestHandler<SQSEvent, Void> {
 
-    private FileParserService parserService;
+    private final FileParserService parserService;
+    private final AthenaService athenaService;
 
     public FileParserLambdaHandler() {
         parserService = new DefaultFileParserService(
@@ -23,24 +21,33 @@ public class FileParserLambdaHandler implements RequestHandler<SQSEvent, Void> {
                 new DefaultDatabaseService(),
                 new JsonFileParser()
         );
+        athenaService = new DefaultAthenaService();
     }
 
-    public FileParserLambdaHandler(FileParserService parserService) {
+    public FileParserLambdaHandler(FileParserService parserService, AthenaService athenaService) {
         this.parserService = parserService;
+        this.athenaService = athenaService;
     }
 
     @Override
     public Void handleRequest(SQSEvent event, Context context) {
         FilePath filePath = extractFilePathFromEvent(event);
-        parserService.parseFile(filePath);
+        try {
+            athenaService.runQuery();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            log.error(e.getMessage());
+            //throw e; todo
+        }
+        //parserService.parseFile(filePath);
         return null;
     }
 
     private FilePath extractFilePathFromEvent(SQSEvent event) {
-        log.info("event recieved: {}", event);
+        log.info("Event recieved: {}", event);
         S3EventNotification notification = S3EventNotification.parseJson(event.getRecords().get(0).getBody());
         S3EventNotification.S3Entity s3Entity = notification.getRecords().get(0).getS3();
-        log.info("s3 entity {}", s3Entity);
+        log.info("S3 entity {}", s3Entity);
         String bucketName = s3Entity.getBucket().getName();
         String fileName = s3Entity.getObject().getKey();
         return new FilePath(bucketName, fileName);

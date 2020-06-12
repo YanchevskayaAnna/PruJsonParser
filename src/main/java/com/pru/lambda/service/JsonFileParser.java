@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 public class JsonFileParser implements FileParser {
-    private ObjectMapper mapper;
+    private final ObjectMapper mapper;
 
     public JsonFileParser(ObjectMapper mapper) {
         this.mapper = mapper;

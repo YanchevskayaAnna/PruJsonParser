@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import static com.pru.lambda.domain.Status.*;
 
@@ -81,7 +80,6 @@ public class DefaultFileParserService implements FileParserService {
     }
 
     private List<Row> insertRowsInBatch(String batchId, FileContent fileContent) {
-        //List<Map<String, String>> fileRows = fileContent.getData(); todo
         List<Entity> entities = fileContent.getEntities();
         List<Row> rows = new ArrayList<>();
         int rowId = 0;

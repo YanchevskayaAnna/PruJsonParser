@@ -37,13 +37,12 @@ public class DefaultDatabaseService implements DatabaseService {
                     .build();
             initDynamoMapper(client);
         } catch (Exception e) {
-            //log.error(e.getMessage(), e); //todo
+            log.error(e.getMessage(), e);
         }
     }
 
     private void initDynamoMapper(AmazonDynamoDB client) {
         DynamoDBMapperConfig config = new DynamoDBMapperConfig.Builder().
-                //withTableNameOverride(DynamoDBMapperConfig.TableNameOverride.withTableNamePrefix(tablePrefix)).
                         withSaveBehavior(DynamoDBMapperConfig.SaveBehavior.UPDATE_SKIP_NULL_ATTRIBUTES).
                         build();
         this.dynamoMapper = new DynamoDBMapper(client, config);
@@ -65,9 +64,8 @@ public class DefaultDatabaseService implements DatabaseService {
     public Batch getBatchInfo(String batchId) {
         Batch batch = new Batch();
         batch.setId(batchId);
-        Batch returnedBatch = dynamoMapper.load(batch.getClass(), batch.getHashKey());
 
-        return returnedBatch;
+        return dynamoMapper.load(batch.getClass(), batch.getHashKey());
     }
 
     public Long getTimeToLive() {
