@@ -44,6 +44,9 @@ public class Batch {
     private String queryExecutionId;
 
     @DynamoDBAttribute
+    private String s3Path;
+
+    @DynamoDBAttribute
     private Long timeToLive;
 
 }
