@@ -10,11 +10,11 @@ compileJava {
 }
 
 sourceSets {
-    main {
+    main(({
         java {
             srcDirs = ['src/main/java']
         }
-    }
+    } as String))
 }
 
 ext {
@@ -51,7 +51,6 @@ dependencies {
 
 }
 
-
 task fatJar(type: Jar) {
     archiveName = 'pru-file-parse.jar'
     manifest.from jar.manifest
@@ -59,10 +58,6 @@ task fatJar(type: Jar) {
     zip64 = true
     from {
         configurations.runtime.collect { it.isDirectory() ? it : zipTree(it) }
-    } {
-        exclude "META-INF/*.SF"
-        exclude "META-INF/*.DSA"
-        exclude "META-INF/*.RSA"
     }
     with jar
 }
