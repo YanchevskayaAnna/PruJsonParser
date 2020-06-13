@@ -10,11 +10,11 @@ compileJava {
 }
 
 sourceSets {
-    main(({
+    main {
         java {
             srcDirs = ['src/main/java']
         }
-    } as String))
+    }
 }
 
 ext {

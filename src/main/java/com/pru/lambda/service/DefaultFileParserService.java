@@ -51,6 +51,7 @@ public class DefaultFileParserService implements FileParserService {
         Batch batch = new Batch();
         batch.setId(batchId);
         batch.setBatchStatus(IN_PROGRESS.name());
+        batch.setFailureReason("");
         dbService.updateBatchInfo(batch);
     }
 
@@ -68,6 +69,7 @@ public class DefaultFileParserService implements FileParserService {
         Batch batch = new Batch();
         batch.setId(batchId);
         batch.setBatchStatus(COMPLETE.name());
+        batch.setFailureReason("");
         dbService.updateBatchInfo(batch);
     }
 

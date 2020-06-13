@@ -1,6 +1,5 @@
 package com.pru.lambda.service;
 
-import com.pru.lambda.domain.FileContent;
 import com.pru.lambda.domain.FilePath;
 
 public interface FileParserService {
