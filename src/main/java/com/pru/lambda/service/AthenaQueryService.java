@@ -33,18 +33,14 @@ public class AthenaQueryService implements QueryService {
     }
 
     @Override
-    public void runQuery() throws InterruptedException {
-
+    public String runQuery() throws InterruptedException {
         String queryExecutionId = submitAthenaQuery(athenaClient);
-
-        log.info("Query submitted: " + System.currentTimeMillis());
-
+        log.info("Query execution ID: {}", queryExecutionId);
+        log.info("Query submitted: {}", System.currentTimeMillis());
         waitForQueryToComplete(athenaClient, queryExecutionId);
-
-        log.info("Query finished: " + System.currentTimeMillis());
-
+        log.info("Query finished: {}", System.currentTimeMillis());
         processResultRows(athenaClient, queryExecutionId);
-
+        return queryExecutionId;
     }
 
     private static String submitAthenaQuery(AthenaClient athenaClient) {

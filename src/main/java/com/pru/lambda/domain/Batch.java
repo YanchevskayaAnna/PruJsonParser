@@ -41,6 +41,9 @@ public class Batch {
     private String failureReason;
 
     @DynamoDBAttribute
+    private String queryExecutionId;
+
+    @DynamoDBAttribute
     private Long timeToLive;
 
 }

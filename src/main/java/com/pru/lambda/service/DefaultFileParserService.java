@@ -29,8 +29,8 @@ public class DefaultFileParserService implements FileParserService {
             batchId = getBatchIdFromFileName(filePath.getFileName());
             log.info("Successfully retrieved batchId {} from event", batchId);
             moveBatchToInProgress(batchId);
-            queryService.runQuery();
-            moveBatchToParsed(batchId);
+            String queryExecutionId = queryService.runQuery();
+            moveBatchToParsed(batchId, queryExecutionId);
             log.info("Validation passed, Execution Time-> " + (System.currentTimeMillis() - startTime) / (1000) + " Seconds");
         } catch (Exception ex) {
             log.error("Error - Failure Parsing file:", ex);
@@ -52,6 +52,7 @@ public class DefaultFileParserService implements FileParserService {
         batch.setId(batchId);
         batch.setBatchStatus(IN_PROGRESS.name());
         batch.setFailureReason("");
+        batch.setQueryExecutionId("");
         dbService.updateBatchInfo(batch);
     }
 
@@ -65,10 +66,11 @@ public class DefaultFileParserService implements FileParserService {
     }
 
     @Override
-    public void moveBatchToParsed(String batchId) {
+    public void moveBatchToParsed(String batchId, String queryExecutionId) {
         Batch batch = new Batch();
         batch.setId(batchId);
         batch.setBatchStatus(COMPLETE.name());
+        batch.setQueryExecutionId(queryExecutionId);
         batch.setFailureReason("");
         dbService.updateBatchInfo(batch);
     }

@@ -10,5 +10,5 @@ public interface FileParserService {
 
      void moveBatchToFailed(String batchId, String failureReason);
      void moveBatchToInProgress(String batchId);
-     void moveBatchToParsed(String batchId);
+     void moveBatchToParsed(String batchId, String queryExecutionId);
 }
