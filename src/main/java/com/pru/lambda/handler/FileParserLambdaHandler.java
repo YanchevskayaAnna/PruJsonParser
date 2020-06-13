@@ -13,33 +13,29 @@ import lombok.extern.slf4j.Slf4j;
 public class FileParserLambdaHandler implements RequestHandler<SQSEvent, Void> {
 
     private final FileParserService parserService;
-    private final AthenaService athenaService;
 
     public FileParserLambdaHandler() {
         parserService = new DefaultFileParserService(
                 AmazonS3ClientBuilder.defaultClient(),
-                new DefaultDatabaseService(),
-                new JsonFileParser()
+                new DynamoDBService(),
+                new AthenaQueryService()
         );
-        athenaService = new DefaultAthenaService();
     }
 
-    public FileParserLambdaHandler(FileParserService parserService, AthenaService athenaService) {
+    public FileParserLambdaHandler(FileParserService parserService) {
         this.parserService = parserService;
-        this.athenaService = athenaService;
     }
 
     @Override
     public Void handleRequest(SQSEvent event, Context context) {
         FilePath filePath = extractFilePathFromEvent(event);
         try {
-            athenaService.runQuery();
-        } catch (InterruptedException e) {
+            parserService.parseFile(filePath);
+        } catch (Exception e) {
             e.printStackTrace();
             log.error(e.getMessage());
-            //throw e; todo
+            throw e;
         }
-        //parserService.parseFile(filePath);
         return null;
     }
 

@@ -9,7 +9,7 @@ public interface FileParserService {
 
      String getBatchIdFromFileName(String fileName);
 
-     void moveBatchToFailed(String batchId);
+     void moveBatchToFailed(String batchId, String failureReason);
      void moveBatchToInProgress(String batchId);
-     void moveBatchToParsed(String batchId, FileContent fileContent);
+     void moveBatchToParsed(String batchId);
 }

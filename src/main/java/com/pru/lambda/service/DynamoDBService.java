@@ -6,30 +6,27 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig;
 import com.pru.lambda.domain.Batch;
-import com.pru.lambda.domain.Row;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Calendar;
-import java.util.List;
 
 @Slf4j
-public class DefaultDatabaseService implements DatabaseService {
+public class DynamoDBService implements DatabaseService {
 
     private static final String REGION = "eu-west-1";
     private static final String ENDPOINT = "https://dynamodb.eu-west-1.amazonaws.com";
 
     private DynamoDBMapper dynamoMapper;
 
-    public DefaultDatabaseService() {
+    public DynamoDBService() {
         initDynamoMapperClient();
     }
 
-    public DefaultDatabaseService(AmazonDynamoDB client) {
+    public DynamoDBService(AmazonDynamoDB client) {
         initDynamoMapper(client);
     }
 
     private void initDynamoMapperClient() {
-
         try {
             AmazonDynamoDB client = AmazonDynamoDBClientBuilder
                     .standard()
@@ -49,14 +46,8 @@ public class DefaultDatabaseService implements DatabaseService {
     }
 
     @Override
-    public void insertBatchRows(List<Row> rows) {
-        long timeToLive = getTimeToLive();
-        rows.forEach(it -> it.setTimeToLive(timeToLive));
-        dynamoMapper.batchSave(rows);
-    }
-
-    @Override
-    public void updateBatchInfo(com.pru.lambda.domain.Batch batch) {
+    public void updateBatchInfo(Batch batch) {
+        batch.setTimeToLive(getTimeToLive());
         dynamoMapper.save(batch);
     }
 
@@ -64,8 +55,7 @@ public class DefaultDatabaseService implements DatabaseService {
     public Batch getBatchInfo(String batchId) {
         Batch batch = new Batch();
         batch.setId(batchId);
-
-        return dynamoMapper.load(batch.getClass(), batch.getHashKey());
+        return dynamoMapper.load(batch.getClass(), batch.getId());
     }
 
     public Long getTimeToLive() {

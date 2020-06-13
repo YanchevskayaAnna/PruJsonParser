@@ -1,38 +1,34 @@
 package com.pru.lambda.service;
 
-import com.pru.lambda.athena.AthenaClientFactory;
-import software.amazon.awssdk.services.athena.AthenaClient;
-import software.amazon.awssdk.services.athena.model.*;
 import lombok.extern.slf4j.Slf4j;
+import software.amazon.awssdk.auth.credentials.EnvironmentVariableCredentialsProvider;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.athena.AthenaClient;
+import software.amazon.awssdk.services.athena.AthenaClientBuilder;
+import software.amazon.awssdk.services.athena.model.*;
 import software.amazon.awssdk.services.athena.paginators.GetQueryResultsIterable;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-public class DefaultAthenaService implements AthenaService {
+public class AthenaQueryService implements QueryService {
 
     private static final String ATHENA_DATABASE = "sampledata";
     private static final String ATHENA_OUTPUT_S3_FOLDER_PATH = "s3://athena-poc-pivoting/";
-    private static final String SIMPLE_ATHENA_QUERY = "SELECT\n" +
-            "  uid,\n" +
-            "  kv1['A'] AS A,\n" +
-            "  kv1['B'] AS B\n" +
-            "FROM (\n" +
-            "  SELECT uid, map_agg(key, value1) kv1\n" +
-            "  FROM json_table\n" +
-            "  GROUP BY uid\n" +
-            "); ";
+    private static final String SIMPLE_ATHENA_QUERY = "SELECT uid, kv1['A'] AS A, kv1['B'] AS B FROM (SELECT uid, map_agg(key, value1) kv1 FROM json_table GROUP BY uid);";
     private static final long SLEEP_AMOUNT_IN_MS = 1000;
 
     private final AthenaClient athenaClient;
 
-    public DefaultAthenaService() {
-        AthenaClientFactory factory = new AthenaClientFactory();
-        athenaClient = factory.createClient();
+    public AthenaQueryService() {
+        AthenaClientBuilder builder = AthenaClient.builder()
+                .region(Region.EU_WEST_1)
+                .credentialsProvider(EnvironmentVariableCredentialsProvider.create());
+        athenaClient = builder.build();
     }
 
-    public DefaultAthenaService(AthenaClient athenaClient) {
+    public AthenaQueryService(AthenaClient athenaClient) {
         this.athenaClient = athenaClient;
     }
 
@@ -57,6 +53,7 @@ public class DefaultAthenaService implements AthenaService {
                 .database(ATHENA_DATABASE).build();
         ResultConfiguration resultConfiguration = ResultConfiguration.builder()
                 .outputLocation(ATHENA_OUTPUT_S3_FOLDER_PATH).build();
+        log.info("Start query execution: {}", SIMPLE_ATHENA_QUERY);
         StartQueryExecutionRequest startQueryExecutionRequest = StartQueryExecutionRequest.builder()
                 .queryString(SIMPLE_ATHENA_QUERY)
                 .queryExecutionContext(queryExecutionContext)

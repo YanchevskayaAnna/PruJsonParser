@@ -5,5 +5,5 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @NoArgsConstructor
-public class DeadLetterQueueHandler {//todo
+public class DeadLetterQueueHandler {//todo sent email notifications
 }

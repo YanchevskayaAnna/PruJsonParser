@@ -1,5 +1,5 @@
 package com.pru.lambda.service;
 
-public interface AthenaService {
+public interface QueryService {
     void runQuery() throws InterruptedException;
 }
