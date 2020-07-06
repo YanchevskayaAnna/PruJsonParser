@@ -17,7 +17,9 @@ import static com.pru.lambda.util.ServiceConstants.ATHENA_OUTPUT_S3_FOLDER_PATH;
 public class AthenaQueryService implements QueryService {
 
     private static final String ATHENA_DATABASE = "sampledata";
-    private static final String SIMPLE_ATHENA_QUERY = "SELECT uid, kv1['A'] AS A, kv1['B'] AS B FROM (SELECT uid, map_agg(key, value1) kv1 FROM json_table GROUP BY uid);";
+    private static final String SIMPLE_ATHENA_QUERY =
+            "SELECT uid, kv1['A'] AS A, kv1['B'] AS B FROM " +
+                    "(SELECT uid, map_agg(key, value1) kv1 FROM json_table GROUP BY uid);";
     private static final long SLEEP_AMOUNT_IN_MS = 1000;
 
     private final AthenaClient athenaClient;
